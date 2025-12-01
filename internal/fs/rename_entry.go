@@ -19,7 +19,7 @@ func RenameEntry(args []string) error {
 
 	oldPath = filepath.Clean(oldPath)
 
-	if filepath.Clean(oldPath) == app.A.CWD {
+	if oldPath == app.A.CWD {
 		return fmt.Errorf("cannot rename project root directory")
 	}
 
