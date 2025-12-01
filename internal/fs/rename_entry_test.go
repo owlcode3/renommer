@@ -26,7 +26,9 @@ func TestRenameEntry(t *testing.T) {
 			new:     "testing",
 			wantErr: false,
 			setup: func(FS afero.Fs) {
-				FS.MkdirAll("/project/test/this/that", 0755)
+				if err := FS.MkdirAll("/project/test/this/that", 0755); err != nil {
+					t.Fatal(err)
+				}
 			},
 			verify: func(FS afero.Fs) error {
 				if _, err := FS.Stat("/project/testing"); err != nil {
@@ -50,9 +52,15 @@ func TestRenameEntry(t *testing.T) {
 			new:     "/project/test/renamed.txt",
 			wantErr: false,
 			setup: func(FS afero.Fs) {
-				FS.MkdirAll("/project/test", 0755)
-				file, _ := FS.Create("/project/test/file.txt")
-				defer file.Close()
+				if err := FS.MkdirAll("/project/test", 0755); err != nil {
+					t.Fatal(err)
+				}
+
+				_, err := FS.Create("/project/test/file.txt")
+				if err != nil {
+					t.Fatal(err)
+				}
+
 			},
 			verify: func(FS afero.Fs) error {
 				if _, err := FS.Stat("/project/test/renamed.txt"); err != nil {
@@ -72,7 +80,9 @@ func TestRenameEntry(t *testing.T) {
 			new:     "something",
 			wantErr: true,
 			setup: func(FS afero.Fs) {
-				FS.MkdirAll("/project", 0755)
+				if err := FS.MkdirAll("/project", 0755); err != nil {
+					t.Fatal(err)
+				}
 			},
 			verify: nil,
 		},
@@ -82,12 +92,15 @@ func TestRenameEntry(t *testing.T) {
 			new:     "/project/testing",
 			wantErr: false,
 			setup: func(FS afero.Fs) {
-				FS.MkdirAll("/project/test/n1/n2", 0755)
+				if err := FS.MkdirAll("/project/test/n1/n2", 0755); err != nil {
+					t.Fatal(err)
+				}
 			},
 			verify: func(FS afero.Fs) error {
 				if _, err := FS.Stat("/project/testing/n1/n2"); err != nil {
 					return fmt.Errorf("absolute rename failed: %v", err)
 				}
+
 				return nil
 			},
 		},
@@ -97,7 +110,9 @@ func TestRenameEntry(t *testing.T) {
 			new:     "testing",
 			wantErr: true,
 			setup: func(FS afero.Fs) {
-				FS.MkdirAll("/project", 0755)
+				if err := FS.MkdirAll("/project", 0755); err != nil {
+					t.Fatal(err)
+				}
 			},
 			verify: nil,
 		},
@@ -107,8 +122,13 @@ func TestRenameEntry(t *testing.T) {
 			new:     "jeez",
 			wantErr: true,
 			setup: func(FS afero.Fs) {
-				FS.MkdirAll("/project/yikes", 0755)
-				FS.MkdirAll("/project/jeez", 0755)
+				if err := FS.MkdirAll("/project/yikes", 0755); err != nil {
+					t.Fatal(err)
+				}
+
+				if err := FS.MkdirAll("/project/jeez", 0755); err != nil {
+					t.Fatal(err)
+				}
 			},
 			verify: nil,
 		},
@@ -118,7 +138,9 @@ func TestRenameEntry(t *testing.T) {
 			new:     "",
 			wantErr: true,
 			setup: func(FS afero.Fs) {
-				FS.MkdirAll("/project", 0755)
+				if err := FS.MkdirAll("/project", 0755); err != nil {
+					t.Fatal(err)
+				}
 			},
 			verify: nil,
 		},
@@ -136,6 +158,7 @@ func TestRenameEntry(t *testing.T) {
 			if tc.wantErr && err == nil {
 				t.Fatalf("expected error but got none")
 			}
+
 			if !tc.wantErr && err != nil {
 				t.Fatalf("did not expect error but got: %v", err)
 			}
